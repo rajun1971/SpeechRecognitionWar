@@ -19,5 +19,6 @@ A web service that compares various speech recognition engines simultaneously
 1. 'pip install < requirements.txt'を実行
 1. GCPを利用する場合は、実行環境の環境変数にGOOGLE_APPLICATION_CREDENTIALSを設定する
 1. Azureを利用する場合は、.env.sampleをリネームし、AZURE_SPEECH_KEYとAZURE_SERVICE_REGIONを設定する(同名の環境変数を設定するでも良い)
-1. 'python main.py'
+1. 'front'ディレクトリにて'npm install && npm run build'実行
+1. 'python main.py'で実行
 1. ブラウザから'http://localhost:8000'にアクセス
