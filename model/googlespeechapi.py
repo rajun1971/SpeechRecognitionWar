@@ -8,6 +8,7 @@ https://github.com/sayonari/GoogleSpeechAPI_stream/blob/master/GoogleSpeechAPI_s
 """
 
 import io
+import json
 import threading
 import queue
 
@@ -15,8 +16,12 @@ import queue
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
+from google.oauth2 import service_account
+
 from logzero import logger
 import numpy as np
+
+import model.key
 
 
 def transcode_from_file(path, sample_rate):
@@ -48,8 +53,9 @@ class Transcoder:
     def __init__(self):
         """Constructor."""
         logger.info('__init__:Enter')
-        self._token = None
         self.transcript = None
+        self.is_final = False
+        self._token = None
         self._queue = queue.Queue()
         self._sampling_rate = 16000
 
@@ -65,7 +71,14 @@ class Transcoder:
 
     def _process(self):
         logger.info('_process:Enter')
-        client = speech.SpeechClient()
+        account_key = model.key.GOOGLE_SERVICE_ACCOUNT_KEY
+        if account_key is None:
+            client = speech.SpeechClient()
+        else:
+            service_account_info = json.loads(account_key)
+            credentials = service_account.Credentials.from_service_account_info(
+                service_account_info)
+            client = speech.SpeechClient(credentials=credentials)
         config = speech.types.RecognitionConfig(
             encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
             language_code='ja-JP',
@@ -102,6 +115,7 @@ class Transcoder:
                 continue
             transcript = result.alternatives[0].transcript
             self.transcript = transcript
+            self.is_final = result.is_final
             if result.is_final:
                 logger.debug('gcp_result:' + transcript)
             else:

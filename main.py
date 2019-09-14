@@ -28,6 +28,10 @@ from logzero import logger
 # 内部module
 import controller
 
+from tornado.options import define, options
+define("port", default=8000, help="run on the given port", type=int)
+tornado.options.parse_command_line()
+
 BASE_DIR = os.path.dirname(__file__)
 
 app = tornado.web.Application([
@@ -40,6 +44,6 @@ app = tornado.web.Application([
 ])
 
 if __name__ == "__main__":
-    app.listen(8000)
-    logger.info("Start server.")
+    app.listen(options.port)
+    logger.info(f'Start server.(port={options.port})')
     tornado.ioloop.IOLoop.instance().start()

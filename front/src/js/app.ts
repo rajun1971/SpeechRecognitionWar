@@ -11,8 +11,7 @@ let speaking_flag = false;
 
 const resampler = new WebAudioL16Stream();
 
-const host = location.host;
-const api_location = `http://${host}/api/recognition`
+const api_location = `${location.origin}/api/recognition`
 const btn_start = document.getElementById("start") as HTMLInputElement;
 const btn_stop = document.getElementById("stop") as HTMLInputElement;
 
@@ -28,7 +27,7 @@ function detectSilence(
     const streamNode = ctx.createMediaStreamSource(stream);
     streamNode.connect(analyser);
     analyser.minDecibels = min_decibels;
-  
+
     const data = new Uint8Array(analyser.frequencyBinCount); // will hold our data
     let silence_start = performance.now();
     let triggered = false; // trigger only once per silence event
@@ -109,7 +108,8 @@ async function createSession() {
     const response = await axios.get(api_location);
     session_id = response.data.session_id;
     // WebSocketのコネクション
-    connection = new WebSocket(`ws://${host}/api/recognition/${session_id}/websocket`);
+    const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:';
+    connection = new WebSocket(`${protocol}//${location.host}/api/recognition/${session_id}/websocket`);
     // サーバーからデータを受け取る
     connection.onmessage = (e) => {
         console.log(e.data);
@@ -121,7 +121,7 @@ async function createSession() {
     };
     localstream = await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: false 
+        video: false
     });
     dispLevelMeter(localstream);
     displayButton(false);

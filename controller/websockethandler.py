@@ -11,14 +11,15 @@ import model
 
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
-    CORS_ORIGINS = ['localhost', '127.0.0.1']
+#    CORS_ORIGINS = ['localhost', '127.0.0.1']
 
     # CORSチェックメソッド。これを実装しないとフレームワークが403を返す
     def check_origin(self, origin):
-        logger.info('check_origin:Enter')
-        parsed_origin = urllib.parse.urlparse(origin)
-        logger.debug(f'host name={parsed_origin.hostname}')
-        return parsed_origin.hostname in self.CORS_ORIGINS
+        return True
+#        logger.info('check_origin:Enter')
+#        parsed_origin = urllib.parse.urlparse(origin)
+#        logger.debug(f'host name={parsed_origin.hostname}')
+#        return parsed_origin.hostname in self.CORS_ORIGINS
 
     def open(self, session_id):
         logger.info(f'open:Enter(token={session_id})')
