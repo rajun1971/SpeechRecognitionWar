@@ -15,6 +15,10 @@ const api_location = `${location.origin}/api/recognition`
 const btn_start = document.getElementById("start") as HTMLInputElement;
 const btn_stop = document.getElementById("stop") as HTMLInputElement;
 
+function newAudioContext() {
+    return new ((<any>window).AudioContext || (<any>window).webkitAudioContext)()
+}
+
 function detectSilence(
     stream: MediaStream,
     onSoundEnd = () =>{},
@@ -22,7 +26,7 @@ function detectSilence(
     silence_delay = 500,
     min_decibels = -40
     ) {
-    const ctx = new AudioContext();
+    const ctx = newAudioContext();
     const analyser = ctx.createAnalyser();
     const streamNode = ctx.createMediaStreamSource(stream);
     streamNode.connect(analyser);
@@ -55,7 +59,7 @@ function dispLevelMeter(stream: MediaStream) {
     const canvasContext = canvas.getContext("2d") as CanvasRenderingContext2D;
     const volumeElement = document.getElementById("volume") as HTMLElement;
     const fpsElement = document.getElementById("fps") as HTMLElement;
-    const ctx = new ((<any>window).AudioContext || (<any>window).webkitAudioContext)();
+    const ctx = newAudioContext();
     const meter = createAudioMeter(ctx);
     const streamNode = ctx.createMediaStreamSource(stream);
     streamNode.connect(meter);
@@ -131,7 +135,7 @@ async function record() {
     displayButton(true);
     const response = await axios.get(`${api_location}/${session_id}/start`);
 //    detectSilence(localstream, onSilence, onSpeak);
-    const context = new AudioContext();
+    const context = newAudioContext();
     input = context.createMediaStreamSource(localstream)
     processor = context.createScriptProcessor(1024, 1, 1);
     input.connect(processor);
