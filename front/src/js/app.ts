@@ -55,7 +55,7 @@ function dispLevelMeter(stream: MediaStream) {
     const canvasContext = canvas.getContext("2d") as CanvasRenderingContext2D;
     const volumeElement = document.getElementById("volume") as HTMLElement;
     const fpsElement = document.getElementById("fps") as HTMLElement;
-    const ctx = new AudioContext();
+    const ctx = new ((<any>window).AudioContext || (<any>window).webkitAudioContext)();
     const meter = createAudioMeter(ctx);
     const streamNode = ctx.createMediaStreamSource(stream);
     streamNode.connect(meter);
