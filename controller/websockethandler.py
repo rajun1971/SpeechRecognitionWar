@@ -32,7 +32,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         items = model.SessionCollector().GetPropertyInSession(
             self._session_id)['transcoders'].items()
         for key, transcoder in items:
-            transcoder.write_stream(np.frombuffer(message, dtype='float32'))
+            transcoder.write_stream(np.frombuffer(message, dtype='int16'))
             if(transcoder.transcript):
                 if(transcoder.transcript != self._response.get(key)):
                     self._response[key] = transcoder.transcript

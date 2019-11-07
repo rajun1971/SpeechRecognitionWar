@@ -92,18 +92,17 @@ class Transcoder:
         if(buf is None):
             self._queue.put(buf)
         else:
-            arr = (buf * 32767).astype(np.int16)
+            arr = v.astype(np.int16)
             arr_bytes = arr.tobytes('C')
             self._queue.put(arr_bytes)
 
     def process(self):
         logger.info('process:Enter')
-        mycallback = MyRecognizeCallback(self)
         logger.info('start transcode')
         self._stt.recognize_using_websocket(
             audio=self._audio_source,
             content_type='audio/l16; rate=16000',
-            recognize_callback=mycallback,
+            recognize_callback=MyRecognizeCallback(self),
             interim_results=True,
             model=lang)
         logger.info('end transcode')

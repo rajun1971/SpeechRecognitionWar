@@ -2,7 +2,7 @@ import axios from 'axios'
 import WebAudioL16Stream from 'web-audio-resampler'
 import {createAudioMeter} from './volume-meter.js'
 
-let localstream: MediaStream;
+let localStream: MediaStream;
 let connection: WebSocket;
 let input: MediaStreamAudioSourceNode;
 let processor: ScriptProcessorNode;
@@ -128,28 +128,25 @@ async function createSession() {
         setResult(data.watson, 'result_watson');
         setResult(data.recaius, 'result_recaius');
     };
-    localstream = await navigator.mediaDevices.getUserMedia({
+    localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: false
     });
-    dispLevelMeter(localstream);
+    dispLevelMeter(localStream);
     displayButton(false);
 }
 
 async function record() {
     displayButton(true);
     const response = await axios.get(`${api_location}/${session_id}/start`);
-//    detectSilence(localstream, onSilence, onSpeak);
     const context = getAudioContext();
-    input = context.createMediaStreamSource(localstream)
+    input = context.createMediaStreamSource(localStream)
     processor = context.createScriptProcessor(1024, 1, 1);
     input.connect(processor);
     processor.connect(context.destination);
     processor.onaudioprocess = (e) => {
-    //    if(speaking_flag) {
-            const l16buffer = resampler.downsample(e.inputBuffer.getChannelData(0))
-            connection.send(l16buffer.buffer); // websocketで送る
-    //    }
+        const l16buffer = resampler.floatTo16BitPCM(resampler.downsample(e.inputBuffer.getChannelData(0)))
+        connection.send(l16buffer.buffer); // websocketで送る
     };
 };
 async function stop() {
@@ -159,7 +156,7 @@ async function stop() {
     await axios.get(`${api_location}/${session_id}/stop`);
 }
 
-var closeconnection = function() {
+var closeConnection = function() {
     connection.close();
 }
 
@@ -170,8 +167,8 @@ if(btn_start && btn_stop) {
 
 window.onload = createSession;
 window.onunload = () => {
-    localstream.getTracks().forEach((track: { stop: () => void; }) => track.stop());
-    closeconnection();
+    localStream.getTracks().forEach((track: { stop: () => void; }) => track.stop());
+    closeConnection();
 }
 
 /*

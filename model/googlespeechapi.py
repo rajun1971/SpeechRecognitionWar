@@ -127,6 +127,6 @@ class Transcoder:
             v = self._queue.get()
             if v is None:
                 break
-            arr = (v * 32767).astype(np.int16)
+            arr = v.astype(np.int16)
             arr_bytes = arr.tobytes('C')
             yield arr_bytes
