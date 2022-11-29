@@ -8,7 +8,7 @@
     "typescript": "^3.4.5",
     "web-audio-resampler": "^1.0.0",
     "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.1"
+    "webpack-cli": "^3.3.12"
   },
   "private": true,
   "dependencies": {}
