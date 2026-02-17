@@ -3,7 +3,7 @@
     "build": "./node_modules/.bin/webpack"
   },
   "devDependencies": {
-    "axios": "^0.21.2",
+    "axios": "^1.13.5",
     "ts-loader": "^5.4.5",
     "typescript": "^3.4.5",
     "web-audio-resampler": "^1.0.0",
